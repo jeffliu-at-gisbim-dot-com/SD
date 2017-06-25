@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence 
+http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1">
+	<persistence-unit name="simpleAuthJpa">
+		<class>com.gisbim.model.pri.AppUser</class>
+		<class>com.gisbim.model.pri.AuthGroup</class>
+		<class>com.gisbim.model.pri.DataAuth</class>
+		<class>com.gisbim.model.pri.Duty</class>
+		<class>com.gisbim.model.pri.Fun</class>
+		<class>com.gisbim.model.pri.FunAuth</class>
+		<class>com.gisbim.model.pri.Org</class>
+		<class>com.gisbim.model.pri.Para</class>
+		<class>com.gisbim.model.pri.Service</class>
+	</persistence-unit>
+</persistence>
