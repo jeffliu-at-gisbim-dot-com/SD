@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gisbim.repo.auth.LoginRepo">
+
+    <select id="findBy" parameterType="String" resultType="com.gisbim.vo.auth.User">
+    SELECT ID           AS id, 
+           ACCOUNT      AS account, 
+           EMPLOYEE_NO  AS employeeNo, 
+           ENCRYPT_TYPE AS encryptType
+      FROM PRI.APP_USER M      
+     WHERE M.EMPLOYEE_NO =  #{employeeNo,jdbcType=VARCHAR}
+    </select>
+
+    <select id="ValidateBy" parameterType="java.util.Map" resultType="com.gisbim.vo.auth.User">
+    SELECT ID           AS id, 
+           ACCOUNT      AS account, 
+           EMPLOYEE_NO  AS employeeNo,
+           USER_NAME    AS userName, 
+           ENCRYPT_TYPE AS encryptType,
+           OPERATE_BY   AS operateBy,
+           OPERATE_AT   AS operateAt
+      FROM PRI.APP_USER M      
+     WHERE M.EMPLOYEE_NO    =  #{employeeNo,jdbcType=VARCHAR}
+     <if test="password != null and password != '' ">
+       AND M.ENCRYPT_PASSWD =  #{password, jdbcType=VARCHAR}     
+     </if>
+     <if test="md5Password != null and md5Password != '' ">
+       AND M.ENCRYPT_PASSWD =  md5(#{md5Password, jdbcType=VARCHAR})           
+     </if>       
+    </select>
+        
+    <select id="findDutyBy" parameterType="Integer" resultType="com.gisbim.vo.auth.Role">
+    SELECT AG.ID                     AS id, 
+           AG.AUTH_GROUP_NAME        AS authGroupName, 
+           AG.AUTH_GROUP_DESCRIPTION AS authGroupDescription, 
+           AG.AUTH_GROUP_TYPE        AS authGroupType, 
+           AG.EDITABLE               AS editable,
+           AG.OPERATE_BY             AS operateBy,
+           AG.OPERATE_AT             AS operateAt
+    FROM PRI.AUTH_GROUP AG
+           LEFT JOIN PRI.DUTY D ON AG.ID = D.AUTH_GROUP_ID
+    WHERE D.USER_ID = #{value, jdbcType=INTEGER}  
+         <![CDATA[
+           AND D.VALID_AFTER    < NOW()
+           AND D.VALID_BEFORE   > NOW()
+         ]]>
+            
+    </select>
+
+    <select id="findFunBy" parameterType="Integer" resultType="com.gisbim.vo.auth.Function">
+    SELECT F.ID            AS id,        
+           F.PARENT_FUN_ID AS parentFunId, 
+           F.FUN_CODE      AS funCode, 
+           F.FUN_NAME      AS funName, 
+           F.FUN_PATH      AS funPath,
+           F.OPERATIONS    AS operations, 
+           F.BOOT_FLAG     AS bootFlag,           
+           F.LAYER         AS layer,
+           F.LAYER_SEQ     AS layerSeq
+     FROM PRI.FUN F 
+       LEFT JOIN PRI.FUN_AUTH RF ON F.ID =  RF.FUN_ID
+     WHERE F.FUN_TYPE    = 'W'
+       AND F.ACTIVE_FLAG = 'Y'
+       AND RF.AUTH_GROUP_ID    =   #{value, jdbcType=INTEGER} 
+     ORDER BY F.LAYER, F.LAYER_SEQ  
+    </select>
+</mapper>
